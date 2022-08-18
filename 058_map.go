@@ -2,32 +2,28 @@ package main
 
 import "fmt"
 
-type Numeric interface {
-	~int | ~float32
-}
-
-type Iterable[T Numeric] interface {
-	Range(func(int, T))
-}
-
-func Map[T Numeric](s any, f func(T) T) (r []T) {
+func Map[T any](s any, f func(T) T) (r []T) {
 	switch s := s.(type) {
-	case Iterable[T]:
-		s.Range(func(i int, v T) {
-			r = append(r, f(v))
-		})
+	case NFunc[T]:
+		for i := 0; ; i++ {
+			if v, ok := s(i); ok {
+				r = append(r, f(v))
+			} else {
+				break
+			}
+		}
 	}
 	return
 }
 
-func DoMap[T Numeric](s any) {
+func DoMap[T ~int | ~float32](s any) {
 	r := Map(s, func(v T) T {
 		return v * 2
 	})
 	fmt.Printf("Map(%v, func()): %v\n", s, r)
 }
 
-type NFunc[T Numeric] func(int) (T, bool)
+type NFunc[T any] func(int) (T, bool)
 
 func (f NFunc[T]) Range(p func(i int, v T)) {
 	for i := 0; ; i++ {
@@ -39,7 +35,7 @@ func (f NFunc[T]) Range(p func(i int, v T)) {
 	}
 }
 
-func Limit[T Numeric](i, j int, f NFunc[T]) NFunc[T] {
+func Limit[T any](i, j int, f NFunc[T]) NFunc[T] {
 	return func(x int) (r T, ok bool) {
 		if i <= x && x <= j {
 			r, ok = f(x)

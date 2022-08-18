@@ -2,18 +2,14 @@ package main
 
 import "fmt"
 
-type Numeric interface {
-	~int | ~float32
-}
-
-func Map[T Numeric](s []T, f func(T) T) (r []T) {
+func Map[T any](s []T, f func(T) T) (r []T) {
 	for _, v := range s {
 		r = append(r, f(v))
 	}
 	return
 }
 
-func DoMap[T Numeric](s []T) {
+func DoMap[T ~int | ~float32](s []T) {
 	r := Map(s, func(v T) T {
 		return v * 2
 	})

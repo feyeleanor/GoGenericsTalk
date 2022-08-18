@@ -2,15 +2,11 @@ package main
 
 import "fmt"
 
-type Numeric interface {
-	~int | ~float32
-}
-
-type Iterable[T Numeric] interface {
+type Iterable[T any] interface {
 	Range(func(int, T))
 }
 
-func Map[T Numeric](s any, f func(T) T) (r []T) {
+func Map[T any](s any, f func(T) T) (r []T) {
 	switch s := s.(type) {
 	case Iterable[T]:
 		s.Range(func(i int, v T) {
@@ -24,7 +20,7 @@ func Map[T Numeric](s any, f func(T) T) (r []T) {
 	return
 }
 
-func DoMap[T Numeric](s []T) {
+func DoMap[T ~int | ~float32](s []T) {
 	r := Map(s, func(v T) T {
 		return v * 2
 	})

@@ -5,15 +5,7 @@ import (
 	R "reflect"
 )
 
-type Numeric interface {
-	~int | ~float32
-}
-
-type Iterable[T Numeric] interface {
-	Range(func(int, T))
-}
-
-func Map[T Numeric](s any, f func(T) T) (r []T) {
+func Map[T any](s any, f func(T) T) (r []T) {
 	if s := R.ValueOf(s); s.Kind() == R.Func {
 		defer func() {
 			recover()
@@ -30,7 +22,7 @@ func Map[T Numeric](s any, f func(T) T) (r []T) {
 	return
 }
 
-func DoMap[T Numeric](s any) {
+func DoMap[T ~int | ~float32](s any) {
 	r := Map(s, func(v T) T {
 		return v * 2
 	})
